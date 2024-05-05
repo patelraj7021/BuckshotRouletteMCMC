@@ -60,7 +60,7 @@ def sim_round(self_total, other_total, deck, player_active, force_fifties):
         # give to self and card is false
         # give to other and card is false
         pass
-    return self_total, other_total, next_card, deck
+    return self_total, other_total, give_other, next_card, deck
 
 
 def sim_game(player_total, dealer_total, deck, 
@@ -71,21 +71,24 @@ def sim_game(player_total, dealer_total, deck,
     
     while player_total != 0 and dealer_total != 0: 
         if player_active:
-            player_total, dealer_total, card, deck = sim_round(player_total,
+            player_total, dealer_total, give_other, card, deck = sim_round(
+                                                         player_total,
                                                          dealer_total, 
                                                          deck,
                                                          player_active,
                                                          force_fifties)
         else:
-            dealer_total, player_total, card, deck = sim_round(dealer_total, 
+            dealer_total, player_total, give_other, card, deck = sim_round(
+                                                         dealer_total, 
                                                          player_total,
                                                          deck,
                                                          player_active,
                                                          force_fifties)
         if len(deck) == 0:
             deck = get_rand_deck()       
-        if not card and player_active:
-            # if card was false and it was player turn, stay player turn
+        if not card and player_active and not give_other:
+            # if card was false and it was player turn and player dealt to self
+            # stay player turn
             player_active = True
         else:
             # switch 
