@@ -32,9 +32,9 @@ def get_rand_deck():
 
 
 def sim_round(self_total, other_total, deck, player_active, force_fifties):
-    next_card = deck.pop()
     trues = deck.count(True)
     falses = deck.count(False)
+    next_card = deck.pop()
     
     # logic for action based on knowledge of deck
     if trues > falses:
@@ -120,7 +120,7 @@ def run_sim(sim_num, fifties_option,
 
 if __name__ == '__main__':
     
-    sim_num = 5000
+    sim_num = 50000
     force_fifties = [None, True, False]
     labels = ['50/50', 'Give', 'Keep']
     
@@ -140,4 +140,4 @@ if __name__ == '__main__':
     ax.yaxis.set_ticks_position('both')
     ax.xaxis.set_ticks_position('both')
     ax.legend(loc='upper right')
-    ax.set_ylim(-4, 104)
+    ax.set_ylim(24, 74)
