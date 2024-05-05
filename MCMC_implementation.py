@@ -140,4 +140,4 @@ if __name__ == '__main__':
     ax.yaxis.set_ticks_position('both')
     ax.xaxis.set_ticks_position('both')
     ax.legend(loc='upper right')
-    ax.set_ylim(24, 74)
+    ax.set_ylim(34, 69)
