@@ -25,29 +25,31 @@ def make_deck(num_cards, num_true):
 def get_rand_deck():
     num_card_options = [2, 3, 4, 5, 6, 7, 8]
     num_cards = random.choice(num_card_options)   
-    num_true_options = list(range(1, num_cards))
+    num_true_options = list(range(1, min(num_cards, 4)))
     num_true = random.choice(num_true_options)
     deck = make_deck(num_cards, num_true)
     return deck
 
 
-def sim_round(self_total, other_total, deck, force_first, force_fifties):
+def sim_round(self_total, other_total, deck, player_active, force_fifties):
     next_card = deck.pop()
     trues = deck.count(True)
     falses = deck.count(False)
+    
     # logic for action based on knowledge of deck
     if trues > falses:
         give_other = True
     elif trues == falses:
-        if force_fifties is not None:
-            give_other = random.choice([True, False])
+        # for simulation purposes
+        # see the outcome of player always forcing 50-50s
+        if force_fifties is not None and player_active:
+            give_other = force_fifties            
         else:
-            give_other = force_fifties
+            give_other = random.choice([True, False])
     else:
         give_other = False
-    # for simulation purposes, need to see outcome of a forced first action
-    if force_first is not None:
-        give_other = force_first
+    
+    # logic for action outcomes
     if give_other and next_card:
         # give to other and card is true
         other_total = other_total - 1
@@ -58,34 +60,38 @@ def sim_round(self_total, other_total, deck, force_first, force_fifties):
         # give to self and card is false
         # give to other and card is false
         pass
-    return self_total, other_total, deck
+    return self_total, other_total, next_card, deck
 
 
 def sim_game(player_total, dealer_total, deck, 
-             force_first=None, force_fifties=None):
+             force_fifties=None):
     
-    round_count = 1
+    # starts as player turn
+    player_active = True
     
     while player_total != 0 and dealer_total != 0: 
-        if round_count % 2 == 1:
-            player_total, dealer_total, deck = sim_round(player_total,
+        if player_active:
+            player_total, dealer_total, card, deck = sim_round(player_total,
                                                          dealer_total, 
                                                          deck,
-                                                         force_first,
+                                                         player_active,
                                                          force_fifties)
         else:
-            dealer_total, player_total, deck = sim_round(dealer_total, 
+            dealer_total, player_total, card, deck = sim_round(dealer_total, 
                                                          player_total,
                                                          deck,
-                                                         force_first,
+                                                         player_active,
                                                          force_fifties)
         if len(deck) == 0:
-            deck = get_rand_deck()
-        round_count = round_count + 1
+            deck = get_rand_deck()       
+        if not card and player_active:
+            # if card was false and it was player turn, stay player turn
+            player_active = True
+        else:
+            # switch 
+            player_active = not player_active
         # forced action will only happen for first action
         # change to None after first round is done
-        if round_count == 2:
-            force_first = None
     
     if player_total > dealer_total:
         winner = True
@@ -95,12 +101,14 @@ def sim_game(player_total, dealer_total, deck,
     return winner
 
 
-def run_sim(sim_num, fifties_option):
+def run_sim(sim_num, fifties_option, 
+            num_cards=4, num_trues=2, player_total=2, dealer_total=2):
     outcomes = []
     perc_wins = []   
     for i in range(sim_num):
-        deck = make_deck(4, 2)
-        outcome = sim_game(2, 2, deck, force_fifties=fifties_option)
+        deck = make_deck(num_cards, num_trues)
+        outcome = sim_game(player_total, dealer_total, deck, 
+                           force_fifties=fifties_option)
         outcomes.append(outcome)        
         perc_win = 100* outcomes.count(True) / len(outcomes)
         perc_wins.append(perc_win)
@@ -109,15 +117,17 @@ def run_sim(sim_num, fifties_option):
 
 if __name__ == '__main__':
     
-    sim_num = 10000
+    sim_num = 5000
     force_fifties = [None, True, False]
+    labels = ['50/50', 'Give', 'Keep']
     
     fig, ax = plt.subplots(1,figsize=(1.33*9, 9))
     fig.subplots_adjust(right=0.95, top=0.95)
     
-    for force_option in force_fifties:
+    for i, force_option in enumerate(force_fifties):
         option_perc_wins = run_sim(sim_num, force_option)
-        ax.plot(range(1, sim_num+1), option_perc_wins, label=str(force_option))
+        ax.plot(range(1, sim_num+1), option_perc_wins, 
+                label=labels[i])
        
     ax.set_xlabel('Simulation Number', fontsize=22)
     ax.set_ylabel('Win Percentage [%]', fontsize=22)
@@ -127,3 +137,4 @@ if __name__ == '__main__':
     ax.yaxis.set_ticks_position('both')
     ax.xaxis.set_ticks_position('both')
     ax.legend(loc='upper right')
+    ax.set_ylim(-4, 104)
