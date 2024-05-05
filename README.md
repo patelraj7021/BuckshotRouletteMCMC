@@ -1,7 +1,7 @@
 ### Markov Chain Monte Carlo Simulation for Buckshot Roulette
 
 This project provides MCMC simulation code for an optimal strategy for the popular game [Buckshot Roulette](https://store.steampowered.com/app/2835570/Buckshot_Roulette/). 
-The base rules of the game are presented below, modified in their presentation to be a card game:
+The base rules of the game are outlined below, modified in their presentation to be a card game:
 * Set up
   * There are two actors in the game, a player and a dealer, and both start with a balance of $200. 
   * From a standard deck of cards, 2 red and 2 black cards are taken, shuffled, and placed facedown in a pile.
