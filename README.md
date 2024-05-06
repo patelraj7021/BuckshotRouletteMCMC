@@ -18,6 +18,7 @@ The base rules of the game are outlined below, modified in their presentation to
     * No changes to either balance.
     * If it was the player's turn, they can take another turn.
     * If it was the dealer's turn, the turn goes to the player.
+* The revealed card is discarded.
 * Notes
   * If the facedown pile runs out of cards, a new pile is made such that:
     * The total number of cards is between 2 and 8 (inclusive).
@@ -34,6 +35,12 @@ This simulation tests this belief by comparing win percentages for the player wh
 (a) always giving the dealer a card,
 (b) always keeping a card, or
 (c) randomly choosing (50/50 chance either way).
+
+#### Method
+The Markov Chain Monte Carlo framework provides a robust methodology to run this experiment.
+Since the move an actor will make is entirely dependent on the state of the game at their turn, the Markov memoryless assumption holds for this game.
+The effect of drawing random cards for the deck is accounted for by running a Monte Carlo simulation for many games.
+Each of (a), (b), and (c) are applied during a simulation run and compared to see which produces the highest win percentage for the player as the number of simulations approaches infinity. 
 
 #### Results
 The win percentage as a function of simulation runs is shown in this repository in results.png.
